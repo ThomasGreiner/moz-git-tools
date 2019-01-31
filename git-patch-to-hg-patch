@@ -66,8 +66,9 @@ def process(git_patch_file):
   parser = email.parser.Parser()
   msg = parser.parse(git_patch_file)
   from_hdr = clean_header(msg['From'])
+  date_hdr = clean_header(msg['Date'])
   commit_title = clean_header(msg['subject'])
-  if not len(commit_title) or not len(from_hdr):
+  if not len(commit_title) or not len(from_hdr) or not len(date_hdr):
     sys.stderr.write("%s does not look like a valid git patch file, skipping\n"
                      % git_patch_file.name)
     return
@@ -91,6 +92,7 @@ def process(git_patch_file):
 
   return '\n'.join(['# HG changeset patch',
                     '# User %s <%s>' % parsed_from,
+                    '# Date %s' % date_hdr,
                     '',
                     commit_title,
                     '',
